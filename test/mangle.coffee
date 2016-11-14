@@ -192,3 +192,14 @@ describe 'mangle:', ->
             result = esshorten.mangle program,
                 renamePrefix: 'foo_'
             expect(result.body[0].expression.id.name.indexOf('foo_')).to.equal 0
+  describe '`customNameGenerator` option', ->
+      program = esprima.parse '(function name() { var foo, bar, baz; });'
+      it 'uses customNameGenerator to generate the names', ->
+          result = esshorten.mangle program,
+            customNameGenerator: (name, prefix) ->
+                return 'A'
+
+          expect(result.body[0].expression.id.name).to.equal 'A'
+          expect(result.body[0].expression.body.body[0].declarations[0].id.name).to.equal 'A'
+          expect(result.body[0].expression.body.body[0].declarations[1].id.name).to.equal 'A'
+          expect(result.body[0].expression.body.body[0].declarations[2].id.name).to.equal 'A'
